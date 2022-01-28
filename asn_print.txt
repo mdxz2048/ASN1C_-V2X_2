@@ -1,0 +1,13 @@
+MessageFrameExt ::= {
+    messageId: 12
+    value: SensorSharingMsg ::= {
+        msgCnt: 120
+        id: 6D 73 67 5F 62 75 66 00
+        equipmentType: 2 (obu)
+        secMark: 12345
+        sensorPos: Position3D ::= {
+            lat: 11600000
+            long: 2900000
+        }
+    }
+}
