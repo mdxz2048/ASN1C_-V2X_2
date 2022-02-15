@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <sys/types.h>
-#include "MessageFrame.h"
+#include "asn1c_encode.h"
 
 #define ASN_PRINTF_FILENAME "asn_print.txt"
 
@@ -12,7 +10,7 @@ static int write_out(const void *buffer, size_t size, void *app_key)
     return (wrote == size) ? 0 : -1;
 }
 
-int main(int ac, char **av)
+int encode_ssm()
 {
     MessageFrame_t *messageframe; /* Type to encode */
     asn_enc_rval_t ec;            /* Encoder return value */
@@ -40,32 +38,25 @@ int main(int ac, char **av)
     messageframe->choice.msgFrameExt.value.choice.SensorSharingMsg.msgCnt = 120;
 
     /* BER encode the data if filename is given */
-    if (ac < 2)
+    const char *filename = "./ber_encode";
+    FILE *fp = fopen(filename, "wb"); /* for BER output */
+    if (!fp)
     {
-        fprintf(stderr, " specify filename for BER output\n");
+        perror(filename);
+        exit(1);
+    }
+    /* Encode the Rectangle type as BER (DER) */
+    ec = der_encode(&asn_DEF_MessageFrame, messageframe, write_out, fp);
+    fclose(fp);
+    if (ec.encoded == -1)
+    {
+        fprintf(stderr, "”Could not encode Rectangle (at %s)\n”",
+                ec.failed_type ? ec.failed_type->name : "unknown");
+        exit(1);
     }
     else
     {
-        const char *filename = av[1];
-        FILE *fp = fopen(filename, "wb"); /* for BER output */
-        if (!fp)
-        {
-            perror(filename);
-            exit(1);
-        }
-        /* Encode the Rectangle type as BER (DER) */
-        ec = der_encode(&asn_DEF_MessageFrame, messageframe, write_out, fp);
-        fclose(fp);
-        if (ec.encoded == -1)
-        {
-            fprintf(stderr, "”Could not encode Rectangle (at %s)\n”",
-                    ec.failed_type ? ec.failed_type->name : "unknown");
-            exit(1);
-        }
-        else
-        {
-            fprintf(stderr, "”Created %s with BER encoded Rectangle\n”", filename);
-        }
+        fprintf(stderr, "”Created %s with BER encoded Rectangle\n”", filename);
     }
     /* Also print the constructed Rectangle XER encoded (XML) */
     xer_fprint(stdout, &asn_DEF_MessageFrame, messageframe);
@@ -73,6 +64,6 @@ int main(int ac, char **av)
     FILE *stream = fopen(ASN_PRINTF_FILENAME, "w+");
     asn_fprint(stream, &asn_DEF_MessageFrame, messageframe);
     fclose(stream);
-    
+
     return 0; /* Encoding finished successfully */
 }

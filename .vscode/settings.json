@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "msg_map.h": "c",
+        "asn_application.h": "c",
+        "constr_sequence.h": "c",
+        "asn1c_decode.h": "c",
+        "stdlib.h": "c",
+        "types.h": "c",
+        "messageframe.h": "c",
+        "asn1c_encode.h": "c",
+        "common.h": "c",
+        "descriptivename.h": "c",
+        "position3d.h": "c",
+        "msg_node.h": "c",
+        "minuteoftheyear.h": "c"
+    }
+}
